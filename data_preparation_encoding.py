@@ -4,19 +4,19 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.preprocessing import OneHotEncoder, MultiLabelBinarizer
 import nltk
 from collections import Counter
+import matplotlib.pyplot as plt
 
 
 # Ensure NLTK stopwords are available
-# nltk.download('stopwords')
+nltk.download('stopwords')
 
 # Add columns that represent a mental disorder
-# Step 1: Clean and split the diagnosis string into lists
+# 1: Clean and split the diagnosis string into lists
 data['diagnosis_list'] = data[col_if_yes_diagnosed].fillna('').apply(
     lambda x: [i.strip() for i in x.split('|')] if x else []
 )
 
-
-# Step 2: Binarize
+# 2: Binarize
 mlb = MultiLabelBinarizer()
 diag_encoded_df = pd.DataFrame(
     mlb.fit_transform(data['diagnosis_list']),
@@ -32,21 +32,21 @@ diagnosis_counts = Counter(all_diagnoses)
 labels, values = zip(*diagnosis_counts.most_common())
 
 
-# # Plot 'Most common mental health issues'.
-# #
-# plt.figure(figsize=(12, 6))
-# plt.bar(labels, values)
-# plt.xticks(rotation=90, fontsize=12)
-# plt.ylabel("Frequency")
-# plt.title("Most Common Mental Health Issues")
-# plt.tight_layout()
-# plt.show()
+# Plot 'Most common mental health issues'.
+#
+plt.figure(figsize=(12, 6))
+plt.bar(labels, values)
+plt.xticks(rotation=90, fontsize=12)
+plt.ylabel("Frequency")
+plt.title("Most Common Mental Health Issues")
+plt.tight_layout()
+plt.show()
 
 
-# Step 3: Add the new diagnosis columns
+# 3: Add the new diagnosis columns
 data = pd.concat([data, diag_encoded_df], axis=1)
 
-# Step 5: Drop helper columns
+# 4: Drop helper columns
 data.drop(columns=['diagnosis_list', col_if_yes_diagnosed], inplace=True)
 
 # ----- Define TF-IDF text processing function -----
@@ -89,18 +89,18 @@ def process_and_align_text(column, prefix, original_data):
 mental_col = 'Why or why not bring up with a potential employer in an interview(mental health issue)_cleaned?'
 tfidf_mental = process_and_align_text(data[mental_col], 'MH_TFIDF_', data)
 
-# Step 1: Get the mean TF-IDF score per feature
-# tfidf_means = tfidf_mental.mean().sort_values(ascending=False)
+# 1: Get the mean TF-IDF score per feature
+tfidf_means = tfidf_mental.mean().sort_values(ascending=False)
 
-# Step 2: Plot the top features in mental health comments
-# top_n = 20
-# plt.figure(figsize=(10, 6))
-# tfidf_means.head(top_n).plot(kind='barh')
-# plt.gca().invert_yaxis()
-# plt.title('Top TF-IDF Features in Mental Health Comments')
-# plt.xlabel('Mean TF-IDF Score')
-# plt.tight_layout()
-# plt.show()
+# 2: Plot the top features in mental health comments
+top_n = 20
+plt.figure(figsize=(10, 6))
+tfidf_means.head(top_n).plot(kind='barh')
+plt.gca().invert_yaxis()
+plt.title('Top TF-IDF Features in Mental Health Comments')
+plt.xlabel('Mean TF-IDF Score')
+plt.tight_layout()
+plt.show()
 
 data = data.drop(columns=[mental_col])
 
@@ -110,22 +110,18 @@ physical_col = 'Why or why not bring up with a potential employer in an intervie
 tfidf_physical = process_and_align_text(data[physical_col], 'PH_TFIDF_', data)
 
 tfidf_means = tfidf_physical.mean().sort_values(ascending=False)
-# Step 2: Plot the top features in physical health comments
-# top_n = 20
-# plt.figure(figsize=(10, 6))
-# tfidf_means.head(top_n).plot(kind='barh')
-# plt.gca().invert_yaxis()
-# plt.title('Top TF-IDF Features in Physical Health Comments')
-# plt.xlabel('Mean TF-IDF Score')
-# plt.tight_layout()
-# plt.show()
+# Plot the top features in physical health comments
+top_n = 20
+plt.figure(figsize=(10, 6))
+tfidf_means.head(top_n).plot(kind='barh')
+plt.gca().invert_yaxis()
+plt.title('Top TF-IDF Features in Physical Health Comments')
+plt.xlabel('Mean TF-IDF Score')
+plt.tight_layout()
+plt.show()
 
 
 data = data.drop(columns=[physical_col])
-
-# ----- Final data merge -----
-# data = pd.concat([data, tfidf_mental, tfidf_physical], axis=1)
-# data = data.fillna(0)  # clean any unexpected NaNs
 
 # Replace "Maybe" with "I don't know" only in object columns
 data.loc[:, data.select_dtypes(include=['object']).columns] = data.select_dtypes(include=['object']).replace("Maybe",

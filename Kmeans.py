@@ -16,7 +16,7 @@ visualizer = KElbowVisualizer(model, k=(1,8),timings=False)
 visualizer.fit(data)
 visualizer.show()
 
-# Usual K-Mean
+# K-Mean
 model = KMeans(n_clusters=3,random_state=0).fit(data)
 lab = model.labels_
 S = silhouette_score(data,lab)
@@ -35,14 +35,14 @@ for seed in range(N_RUNS):
     print(f"\n==== RUN {seed} ====")
     rng = np.random.default_rng(seed)
 
-    # Step 1: Load and filter data
+    # Load and filter data
     data = pd.read_csv('processed_data.csv')
     selector = VarianceThreshold(threshold=0.071)
     data_array = selector.fit_transform(data)
     selected_columns = data.columns[selector.get_support()]
     data = pd.DataFrame(data_array, columns=selected_columns)
 
-    # Step 2: Permutation Feature Importance
+    # Permutation Feature Importance
     baseline_score = silhouette_score(data, KMeans(n_clusters=3, random_state=0).fit_predict(data))
     importance_scores = {}
 
@@ -59,7 +59,7 @@ for seed in range(N_RUNS):
     selected_features = importance_df[importance_df['silhouette_drop'] > 0].index
     data_selected = data[selected_features]
 
-    # Step 3: PCA and clustering
+    # PCA and clustering
     pca = PCA(n_components=3)
     data_pca_3d = pca.fit_transform(data_selected)
     labels = KMeans(n_clusters=3, random_state=0).fit_predict(data_pca_3d)
@@ -77,7 +77,7 @@ for seed in range(N_RUNS):
             "seed": seed
         }
 
-# Step 4: Save and report best result
+# Save and report best result
 print(f"\n🎯 Best Silhouette Score: {best_score:.4f} from seed {best_run_data['seed']}")
 # pd.DataFrame(best_run_data['selected_features']).to_csv('best_selected_features.csv', index=False)
 

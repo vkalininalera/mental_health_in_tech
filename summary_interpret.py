@@ -1,7 +1,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 
-# Read summary if needed
+# Read summary
 summary = pd.read_csv("best_cluster_summary.csv", index_col=0)
 
 # Define your feature groups
@@ -48,7 +48,7 @@ aggregated_groups = {
 
 }
 
-# Step 1: Build dictionary of averaged values
+# Build dictionary of averaged values
 aggregated_data = {}
 
 for group, features in aggregated_groups.items():
@@ -59,10 +59,10 @@ for group, features in aggregated_groups.items():
 if "What is your age?" in summary.index:
     aggregated_data["Average Age"] = summary.loc["What is your age?"]
 
-# Step 2: Convert to DataFrame
+# Convert to DataFrame
 aggregated_df = pd.DataFrame(aggregated_data).T  # Groups as rows
 
-# Step 3: Plot
+# Plot
 aggregated_df.T.plot(kind='bar', figsize=(10, 6), colormap='tab20')
 plt.title("Aggregated Cluster Summary by Thematic Group")
 plt.ylabel("Average Percentage")

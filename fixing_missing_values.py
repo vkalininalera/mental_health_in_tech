@@ -183,11 +183,6 @@ data = data.drop(columns=['Which of the following best describes your work posit
 
 # So now we have a column 'Inferred Tech Role'.
 
-
-# Do you currently have a mental health disorder?
-# If yes, what condition(s) have you been diagnosed with?
-# If maybe, what condition(s) do you believe you have?
-
 # Adding missing values to the column 'If maybe, what condition(s) do you believe you have?', this column is
 # correlated to the column 'Do you currently have a mental health disorder?'
 
@@ -236,8 +231,6 @@ data.loc[
     col_how_many_empl
 ] = '0'
 
-# Step 1: Find unique values
-# unique_ranges = data['How many employees does your company or organization have?'].dropna().unique()
 
 # Create a mapping dictionary
 employee_size_map = {
@@ -487,13 +480,13 @@ def clean_conditions(text):
     text = re.sub(r'generalized[\s\-]?anxiety[\s\-]?disorder', 'generalized-anxiety-disorder', text)
     text = re.sub(r'bipolar[\s\-]?disorder', 'bipolar-disorder', text)
 
-    # Step 1: Remove any text inside parentheses (subcategories)
+    # 1: Remove any text inside parentheses (subcategories)
     text = re.sub(r'\([^)]*\)', '', text)
 
-    # Step 2: Remove any non-alphabetic characters except '|' and '-'
+    # 2: Remove any non-alphabetic characters except '|' and '-'
     text = re.sub(r'[^a-z|\s\-]', '', text)
 
-    # Step 3: Normalize spaces and remove extra pipes
+    # 3: Normalize spaces and remove extra pipes
     text = re.sub(r'\s+', ' ', text).strip()
     text = re.sub(r'\|+', '|', text).strip('|')
 
